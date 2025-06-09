@@ -1,0 +1,52 @@
+[
+  {
+    "id": 1,
+    "type": "EVENT",
+    "lab": { "id": "telemedia", "nome": "TeleMídia", "accentColor": "cyan" },
+    "author": { "id": 91, "nome": "Prof. Carlos Salles" },
+    "titulo": "Defesa de TCC – João Silva",
+    "conteudo": "Apresentação do trabalho \"Detecção de objetos em tempo real\".",
+    "dataHora": "2025-07-21T14:30:00Z",
+    "local": "Auditório A"
+  },
+  {
+    "id": 2,
+    "type": "POST",
+    "lab": { "id": "labsoft", "nome": "LabSoft", "accentColor": "green" },
+    "author": { "id": 55, "nome": "Ana Beatriz" },
+    "titulo": "",
+    "conteudo": "Saiu o cronograma de sprints para o projeto X! Confiram no repositório.",
+    "dataHora": "2025-07-20T18:15:00Z",
+    "local": null
+  },
+  {
+    "id": 3,
+    "type": "POST",
+    "lab": { "id": "datalab", "nome": "DataLab", "accentColor": "amber" },
+    "author": { "id": 72, "nome": "Rafael Costa" },
+    "titulo": "Dataset público atualizado",
+    "conteudo": "Publicamos a versão 2.0 do dataset de mobilidade urbana.",
+    "dataHora": "2025-07-19T10:05:00Z",
+    "local": null
+  },
+  {
+    "id": 4,
+    "type": "EVENT",
+    "lab": { "id": "labsoft", "nome": "LabSoft", "accentColor": "green" },
+    "author": { "id": 34, "nome": "Profa. Dra. Oliveira" },
+    "titulo": "Workshop: Testes Automatizados",
+    "conteudo": "Mão na massa sobre JUnit 5 e Testcontainers.",
+    "dataHora": "2025-07-25T09:00:00Z",
+    "local": "Sala 305"
+  },
+  {
+    "id": 5,
+    "type": "POST",
+    "lab": { "id": "telemedia", "nome": "TeleMídia", "accentColor": "cyan" },
+    "author": { "id": 88, "nome": "Mariana Ferreira" },
+    "titulo": "",
+    "conteudo": "Compartilhando um artigo interessante sobre processamento de imagens médicas.",
+    "dataHora": "2025-07-18T15:42:00Z",
+    "local": null
+  }
+]
