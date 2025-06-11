@@ -7,7 +7,7 @@ const membersMock = [
   {
     id: 1,
     nome: 'Prof. Carlos Salles',
-    bio: 'Coord. TeleMídia',
+    bio: 'Uma bio bem maior para ver como os cards vão ficar',
     role: 'professor',
     ativo: true,
     github_url: '',
@@ -37,7 +37,7 @@ const membersMock = [
 ];
 
 export default function LabMembros() {
-  const { labId } = useOutletContext();
+  const { labId, isAdmin } = useOutletContext();
   const [members, setMembers] = useState([]);
   const [filters, setFilters] = useState({ q: '', role: 'all' });
 
@@ -60,7 +60,7 @@ export default function LabMembros() {
   return (
     <div className="space-y-6">
       <MembrosFiltros filters={filters} setFilters={setFilters} />
-      <MembrosContainer items={visibles} />
+      <MembrosContainer items={visibles} isAdmin={isAdmin}/>
     </div>
   );
 }

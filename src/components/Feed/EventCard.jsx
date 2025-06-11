@@ -1,8 +1,10 @@
-import InitialAvatar from './InitialAvatar';
+import { Pencil } from 'lucide-react';
+import { isAfter } from 'date-fns';
 
-export default function EventCard({ item }) {
+export default function EventCard({ item, isAdmin, onEdit }) {
   const { lab, author } = item;
   const dt = new Date(item.dataHora);
+  const future = isAfter(dt, new Date());
 
   const dateStr = dt.toLocaleDateString('pt-BR', {
     day: '2-digit',
@@ -17,7 +19,17 @@ export default function EventCard({ item }) {
     <div className="relative overflow-hidden rounded-xl bg-white shadow-sm ring-1 ring-gray-100 transition hover:shadow-md">
       <span className="absolute inset-y-0 left-0 w-1 bg-primary" />
 
+      {isAdmin && future && (
+        <button
+          onClick={() => onEdit && onEdit(item)}
+          className="absolute top-2 right-2 rounded bg-white/80 p-1 backdrop-blur"
+        >
+          <Pencil className="h-4 w-4 text-gray-600" />
+        </button>
+      )}
+
       <div className="flex items-start gap-3 p-5 sm:p-6">
+        {/* ícone decorativo calendário */}
         <div className="flex h-10 w-10 items-center justify-center rounded-full bg-primary text-lg text-white">
           📅
         </div>
@@ -30,10 +42,7 @@ export default function EventCard({ item }) {
             {item.local && <span>• {item.local}</span>}
           </div>
 
-          <h4 className="text-lg font-semibold text-gray-900">
-            {item.titulo}
-          </h4>
-
+          <h4 className="text-lg font-semibold text-gray-900">{item.titulo}</h4>
           <p className="whitespace-pre-line text-sm text-gray-700">
             {item.conteudo}
           </p>
@@ -43,9 +52,11 @@ export default function EventCard({ item }) {
           </div>
         </div>
 
-        <span className="ml-auto hidden rounded bg-primary/10 px-2 py-0.5 text-xs font-medium text-primary sm:inline">
-          {lab.nome}
-        </span>
+        {lab?.nome && (
+          <span className="ml-auto hidden rounded bg-primary/10 px-2 py-0.5 text-xs font-medium text-primary sm:inline">
+            {lab.nome}
+          </span>
+        )}
       </div>
     </div>
   );

@@ -7,7 +7,8 @@ import LabsHome from "./pages/LabsHome";
 import Laboratorio from "./pages/Laboratorio";
 import LabFeed from "./pages/LabFeed";
 import LabMaterial from "./pages/LabMaterial";
-import LabMembros from "./pages/LabMembros"
+import LabMembros from "./pages/LabMembros";
+import LabEventos from "./pages/LabEventos";
 
 function App() {
   return (
@@ -21,8 +22,9 @@ function App() {
         <Route path="/labs/:id/*" element={<Laboratorio />}>
           <Route index element={<LabFeed />} />
           <Route path="feed" element={<LabFeed />} />
+          <Route path="eventos" element={<LabEventos />} />
           <Route path="membros" element={<LabMembros />} />
-          <Route path="materiais"  element={<LabMaterial />} /> 
+          <Route path="materiais" element={<LabMaterial />} />
         </Route>
       </Routes>
     </>
