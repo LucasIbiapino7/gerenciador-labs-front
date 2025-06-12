@@ -9,6 +9,11 @@ import LabFeed from "./pages/LabFeed";
 import LabMaterial from "./pages/LabMaterial";
 import LabMembros from "./pages/LabMembros";
 import LabEventos from "./pages/LabEventos";
+import LabAdminLayout from "./pages/LabAdminLayout";
+import LabAdminInformation from "./pages/LabAdminInformations";
+import LabAdminEvents from "./pages/LabAdminEvents"
+import LabAdminMaterial from "./pages/LabAdminMaterial"
+import LabAdminMembro from "./pages/LabAdminMembro";
 
 function App() {
   return (
@@ -25,6 +30,12 @@ function App() {
           <Route path="eventos" element={<LabEventos />} />
           <Route path="membros" element={<LabMembros />} />
           <Route path="materiais" element={<LabMaterial />} />
+        </Route>
+        <Route path="/labs/:id/admin/*" element={<LabAdminLayout />}>
+          <Route index element={<LabAdminInformation />} />
+          <Route path="eventos" element={<LabAdminEvents />} />
+          <Route path="materiais" element={<LabAdminMaterial />} />
+          <Route path="membros" element={<LabAdminMembro />} />
         </Route>
       </Routes>
     </>

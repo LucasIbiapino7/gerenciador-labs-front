@@ -27,13 +27,13 @@ async function fetchLabInfo(labId) {
       logoUrl: "",
     },
     isMember: labId % 2 === 0,
-    isAdmin:  true
+    isAdmin: true,
   };
 }
 
 export default function LabLayout() {
-  const { id } = useParams(); 
-  const labId = Number(id); 
+  const { id } = useParams();
+  const labId = Number(id);
 
   const [info, setInfo] = useState(null);
 
@@ -116,6 +116,20 @@ export default function LabLayout() {
               Pesquisas
             </NavLink>
           </li>
+          {isAdmin && (
+            <li>
+              <NavLink
+                to={`/labs/${labId}/admin`}  
+                className={({ isActive }) =>
+                  isActive
+                    ? "border-b-2 border-primary pb-1 text-primary"
+                    : "pb-1"
+                }
+              >
+                Administração
+              </NavLink>
+            </li>
+          )}
         </ul>
       </nav>
       <div
@@ -132,7 +146,7 @@ export default function LabLayout() {
         )}
       </div>
       <div className="mx-auto w-full max-w-6xl p-8">
-        <Outlet context={{ labId, isMember, isAdmin  }} />
+        <Outlet context={{ labId, isMember, isAdmin }} />
       </div>
     </div>
   );
