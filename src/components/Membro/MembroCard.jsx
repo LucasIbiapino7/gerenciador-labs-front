@@ -1,4 +1,5 @@
 import { Github, Linkedin, BookOpen, Lock } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 
 const bgMap = {
   professor: 'bg-amber-500',
@@ -27,8 +28,10 @@ export default function MemberCard({ member, isAdmin }) {
     photoUrl,
   } = member;
 
+  const navigate = useNavigate();
+
   return (
-    <div className="relative rounded-xl bg-white p-4 text-center ring-1 ring-gray-200 shadow-sm transition transform hover:-translate-y-1 hover:shadow-lg">
+    <div onClick={() => navigate(`/users/${member.id}`)} className="relative rounded-xl bg-white p-4 text-center ring-1 ring-gray-200 shadow-sm transition transform hover:-translate-y-1 hover:shadow-lg">
 
       <div className="relative mx-auto h-20 w-20">
         {photoUrl ? (
