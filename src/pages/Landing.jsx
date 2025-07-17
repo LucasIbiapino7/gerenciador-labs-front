@@ -11,7 +11,7 @@ export default function Landing() {
       {/* Hero Section com imagem de fundo */}
       <section className="relative flex min-h-screen flex-col items-center justify-center px-4 text-center overflow-hidden">
         {/* Imagem de fundo cobrindo toda a área */}
-        <div className="absolute inset-0 bg-[url('src\img\Gemini_Generated_Image_1bmt971bmt971bmt.png')] bg-cover bg-center"></div>
+        <div className="absolute inset-0 bg-[url('C:\Users\Lorena\Documents\Multab\gerenciador-labs-front\src\img\Gemini_Generated_Image_1bmt971bmt971bmt.png')] bg-cover bg-center"></div>
         
         {/* Overlay escuro para melhor contraste */}
         <div className="absolute inset-0 bg-black/40"></div>
