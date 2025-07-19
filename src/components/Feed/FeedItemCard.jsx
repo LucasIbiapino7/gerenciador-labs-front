@@ -6,7 +6,7 @@ export default function FeedItemCard({ item }) {
 
   return (
     <div style={{ '--accent': `var(--tw-${accent}-500)` }}>
-      {item.type === 'EVENT' ? (
+      {item.tipo === 'EVENTO' ? (
         <EventCard item={item} />
       ) : (
         <PostCard item={item} />

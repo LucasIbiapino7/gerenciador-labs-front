@@ -20,8 +20,7 @@ export default function MaterialFiltros({ filters, setFilters, isAdmin, onAdd })
           <option value="pdf">PDF</option>
           <option value="slide">Slides</option>
           <option value="video">Vídeos</option>
-          <option value="repo">Repositórios</option>
-          <option value="link">Links</option>
+          <option value="repositorio">Repositórios</option>
         </select>
       </div>
       {isAdmin && (

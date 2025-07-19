@@ -20,6 +20,7 @@ import Perfil from "./pages/Perfil";
 import EditarPerfil from "./pages/EditarPerfil";
 import PerfilPublico from "./pages/PerfilPublico";
 import Register from "./pages/Register";
+import AdminDashboard from "./pages/AdminDashboard";
 
 function App() {
   return (
@@ -28,6 +29,7 @@ function App() {
 
       <Routes>
         <Route path="/" element={<Landing />} />
+        <Route path="/admin" element={<AdminDashboard />} />
         <Route path="me" element={<Perfil />} />
         <Route path="me/editar" element={<EditarPerfil />} />
         <Route path="/users/:userId" element={<PerfilPublico />} />

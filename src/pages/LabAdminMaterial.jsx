@@ -1,80 +1,143 @@
-import { useState } from 'react';
-import MaterialContainer from '../components/Material/MaterialContainer';
-import MaterialFiltros from '../components/Material/MaterialFiltros';
-import MaterialModal from '../components/Material/MaterialModal';
+import { useOutletContext } from "react-router-dom";
+import { useState, useMemo } from "react";
 
-const MOCK_MATERIAIS = [
-  {
-    id: 1,
-    titulo: 'Apostila de Algoritmos',
-    descricao: 'PDF completo sobre lógica de programação.',
-    url: 'https://example.com/algoritmos.pdf',
-    tipo: 'pdf',
-    visibilidade: 'PUBLICO',
-  },
-  {
-    id: 2,
-    titulo: 'Slides Semana 1',
-    descricao: 'Introdução ao curso e ferramentas.',
-    url: 'https://example.com/slides.pdf',
-    tipo: 'slide',
-    visibilidade: 'PUBLICO',
-  },
-  {
-    id: 3,
-    titulo: 'Repositório Exemplo',
-    descricao: 'Código base do projeto.',
-    url: 'https://github.com/ufma-labs/projeto-base',
-    tipo: 'repo',
-    visibilidade: 'PRIVADO',
-  },
-];
+import MaterialFiltros from "../components/Material/MaterialFiltros";
+import MaterialContainer from "../components/Material/MaterialContainer";
+import MaterialModal from "../components/Material/MaterialModal";
+
+import {
+  listarMateriaisLab,
+  criarMaterial,
+  atualizarMaterial,
+} from "../services/MaterialService";
+
+import useDebounce from "../hooks/useDebounce";
+import { usePaginatedFetch } from "../hooks/usePaginatedFetch";
+import PaginationBar from "../components/Pagination/PaginationBar";
 
 export default function LabAdminMaterial() {
-  const [materiais, setMateriais] = useState(MOCK_MATERIAIS);
-  const [filters, setFilters] = useState({ q: '', tipo: 'all' });
-  const [modalOpen, setModalOpen] = useState(false);
-  const [editing, setEditing] = useState(null);
+  const { labId } = useOutletContext();
 
-  const filtered = materiais.filter((m) => {
-    const matchesTipo = filters.tipo === 'all' || m.tipo === filters.tipo;
-    const matchesSearch = m.titulo.toLowerCase().includes(filters.q.toLowerCase());
-    return matchesTipo && matchesSearch;
+  const [filters, setFilters] = useState({ q: "", tipo: "all" });
+  const debouncedNome = useDebounce(filters.q, 400);
+
+  const [modalOpen, setModal] = useState(false);
+  const [editing, setEdit] = useState(null);
+  const [formError, setFormError] = useState(null);
+
+  const fetcher = useMemo(
+    () => async ({ page, size }) =>
+      listarMateriaisLab(labId, true, {
+        tipo: filters.tipo,
+        nome: debouncedNome,
+        page,
+        size,
+      }),
+    [labId, filters.tipo, debouncedNome]
+  );
+
+  const {
+    items: materiais,
+    page,
+    size,
+    totalPages,
+    totalElements,
+    loading,
+    error,
+    setPage,
+    setSize,
+    reload
+  } = usePaginatedFetch({
+    fetcher,
+    initialPage: 0,
+    initialSize: 2, // teste -> depois 12
+    deps: [labId, filters.tipo, debouncedNome],
+    auto: true
   });
 
-  const handleSave = (form) => {
-    if (form.id) {
-      setMateriais((prev) => prev.map((m) => (m.id === form.id ? form : m)));
-    } else {
-      setMateriais((prev) => [...prev, { ...form, id: Date.now() }]);
+  function handleAdd() {
+    setEdit(null);
+    setFormError(null);
+    setModal(true);
+  }
+
+  function handleEdit(item) {
+    setEdit(item);
+    setFormError(null);
+    setModal(true);
+  }
+
+  async function handleSave(form) {
+    try {
+      setFormError(null);
+      if (form.id) {
+        await atualizarMaterial(labId, form.id, form);
+        reload({ silent: true });
+      } else {
+        await criarMaterial(labId, form);
+        setPage(0);
+      }
+      setModal(false);
+      setEdit(null);
+    } catch (err) {
+      console.error(err);
+      if (err.response?.status === 422) {
+        const msg =
+          err.response.data.errors?.[0]?.message || "Dados inválidos.";
+        setFormError(msg);
+      } else if (err.response?.status === 403) {
+        setFormError("Você não tem permissão para salvar materiais.");
+      } else if (err.response?.status === 404) {
+        setFormError("Material ou laboratório não encontrado.");
+      } else {
+        setFormError("Erro ao salvar material.");
+      }
     }
-    setModalOpen(false);
-    setEditing(null);
-  };
+  }
 
-  const handleEdit = (item) => {
-    setEditing(item);
-    setModalOpen(true);
-  };
+  if (loading && materiais.length === 0) return <p>Carregando materiais…</p>;
+  if (error) return <p className="text-red-600">{error}</p>;
 
-  const handleAdd = () => {
-    setEditing(null);
-    setModalOpen(true);
-  };
+  const filtrados = materiais; // backend já veio filtrado
 
   return (
-    <div className="space-y-8">
-      <MaterialFiltros filters={filters} setFilters={setFilters} isAdmin onAdd={handleAdd} />
-      <MaterialContainer items={filtered} isAdmin onEdit={handleEdit} />
+    <div className="space-y-6">
+      <MaterialFiltros
+        filters={filters}
+        setFilters={setFilters}
+        isAdmin={true}
+        onAdd={handleAdd}
+      />
+
+      <MaterialContainer
+        items={filtrados}
+        isAdmin={true}
+        onEdit={handleEdit}
+      />
+
+      <PaginationBar
+        page={page}
+        totalPages={totalPages}
+        size={size}
+        onPageChange={setPage}
+        onSizeChange={setSize}
+        sizeOptions={[2, 12, 24]}
+      />
+
       <MaterialModal
         open={modalOpen}
         onClose={() => {
-          setModalOpen(false);
-          setEditing(null);
+          setModal(false);
+          setEdit(null);
         }}
         onSave={handleSave}
         initialData={editing}
+        error={formError}
       />
+
+      <p className="text-xs text-gray-500">
+        Mostrando {(page * size) + 1} – {Math.min((page + 1) * size, totalElements)} de {totalElements}
+      </p>
     </div>
   );
 }

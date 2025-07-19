@@ -19,7 +19,7 @@ export default function LabCard({
   accentColor = "cyan",
 }) {
   const navigate = useNavigate();
-  const gradient = accentToGradient[accentColor] || fallbackGradient;
+  const gradient = accentToGradient[accentColor] ?? fallbackGradient;
 
   return (
     <div
@@ -27,21 +27,24 @@ export default function LabCard({
       tabIndex={0}
       onClick={() => navigate(`/labs/${id}/feed`)}
       onKeyDown={(e) => e.key === "Enter" && navigate(`/labs/${id}/feed`)}
-      className="group flex h-full w-full cursor-pointer flex-col overflow-hidden rounded-xl bg-white shadow hover:shadow-lg transition-shadow"
+      className="group flex h-full w-full cursor-pointer flex-col overflow-hidden rounded-xl bg-white shadow transition-shadow hover:shadow-lg"
     >
-      <div
-        className={`relative h-28 w-full bg-gradient-to-r ${gradient}`}
-      >
-        <h3 className="absolute left-4 top-4 text-lg font-semibold text-white drop-shadow-sm">
+      <div className={`relative h-28 w-full bg-gradient-to-r ${gradient}`}>
+        <h3 className="absolute left-4 top-4 max-w-[70%] truncate text-lg font-semibold text-white drop-shadow-sm">
           {nome}
         </h3>
 
-        {fotoUrl && (
+        {fotoUrl ? (
           <img
             src={fotoUrl}
             alt={nome}
-            className="absolute -bottom-6 right-4 h-16 w-16 rounded-full border-4 border-white object-cover"
+            className="absolute -bottom-6 right-4 h-16 w-16 rounded-full border-4 border-white object-cover shadow-md"
+            draggable={false}
           />
+        ) : (
+          <div className="absolute -bottom-6 right-4 flex h-16 w-16 items-center justify-center rounded-full border-4 border-white bg-white/20 text-lg font-bold text-white shadow-md backdrop-blur">
+            {nome?.charAt(0).toUpperCase()}
+          </div>
         )}
       </div>
 
@@ -52,7 +55,9 @@ export default function LabCard({
           </span>
         )}
 
-        <p className="line-clamp-2 text-sm text-gray-700">{descricaoCurta}</p>
+        <p className="line-clamp-2 text-sm text-gray-700">
+          {descricaoCurta || "Sem descrição."}
+        </p>
       </div>
     </div>
   );

@@ -1,66 +1,75 @@
-import { useEffect, useState } from 'react';
 import { useOutletContext } from 'react-router-dom';
+import { useState, useMemo } from 'react';
+
 import MembrosFiltros from '../components/Membro/MembrosFiltros';
 import MembrosContainer from '../components/Membro/MembrosContainer';
 
-const membersMock = [
-  {
-    id: 1,
-    nome: 'Prof. Carlos Salles',
-    bio: 'Uma bio bem maior para ver como os cards vão ficar',
-    role: 'professor',
-    ativo: true,
-    github_url: '',
-    linkedin_url: 'https://linkedin.com',
-    link_lattes: 'http://lattes',
-  },
-  {
-    id: 2,
-    nome: 'Ana Beatriz',
-    bio: 'Mestranda em Eng. de Software',
-    role: 'aluno',
-    ativo: true,
-    github_url: 'https://github.com',
-    linkedin_url: '',
-    link_lattes: '',
-  },
-  {
-    id: 3,
-    nome: 'João Pedro',
-    bio: '',
-    role: 'aluno',
-    ativo: false,
-    github_url: '',
-    linkedin_url: '',
-    link_lattes: '',
-  },
-];
+import { listarMembrosLab } from '../services/MembroService';
+import useDebounce from '../hooks/useDebounce';
+import { usePaginatedFetch } from '../hooks/usePaginatedFetch';
+import PaginationBar from '../components/Pagination/PaginationBar';
 
 export default function LabMembros() {
-  const { labId, isAdmin } = useOutletContext();
-  const [members, setMembers] = useState([]);
+  const { labId, admin } = useOutletContext();
+
   const [filters, setFilters] = useState({ q: '', role: 'all' });
+  const debouncedNome = useDebounce(filters.q, 700); // 
+  const fetcher = useMemo(
+    () => async ({ page, size }) =>
+      listarMembrosLab(labId, {
+        nome: debouncedNome,
+        page,
+        size,
+      }),
+    [labId, debouncedNome]
+  );
 
-  useEffect(() => {
-    setMembers(membersMock);
-  }, [labId]);
-
-  const ordered = members.sort((a, b) => {
-    const rank = (m) => {
-      if (!m.ativo) return 2;
-      return m.role === 'professor' ? 0 : 1;
-    };
-    return rank(a) - rank(b);
+  const {
+    items: membros,
+    page,
+    size,
+    totalPages,
+    totalElements,
+    loading,
+    error,
+    setPage,
+    reload
+  } = usePaginatedFetch({
+    fetcher,
+    initialPage: 0,
+    initialSize: 3, 
+    deps: [labId, debouncedNome],
+    auto: true
   });
 
-  const visibles = ordered
-    .filter((m) => filters.role === 'all' || m.role === filters.role)
-    .filter((m) => m.nome.toLowerCase().includes(filters.q.toLowerCase()));
+  if (loading && membros.length === 0) return <p>Carregando membros…</p>;
+  if (error) return <p className="text-red-600">{error}</p>;
+
+  const visibles = membros.filter(
+    (m) => filters.role === 'all' || m.role === filters.role
+  );
 
   return (
     <div className="space-y-6">
-      <MembrosFiltros filters={filters} setFilters={setFilters} />
-      <MembrosContainer items={visibles} isAdmin={isAdmin}/>
+      <MembrosFiltros
+        filters={filters}
+        setFilters={setFilters}
+      />
+
+      <MembrosContainer
+        items={visibles}
+        isAdmin={admin}
+      />
+
+      <PaginationBar
+        page={page}
+        totalPages={totalPages}
+        onPageChange={setPage}
+      />
+
+      <p className="text-xs text-gray-500">
+        Mostrando {(page * size) + 1} – {Math.min((page + 1) * size, totalElements)} de {totalElements}
+      </p>
     </div>
   );
 }

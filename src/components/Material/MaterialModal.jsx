@@ -1,6 +1,12 @@
 import { useState, useEffect } from 'react';
 
-export default function MaterialModal({ open, onClose, onSave, initialData }) {
+export default function MaterialModal({
+  open,
+  onClose,
+  onSave,
+  initialData,
+  error,
+}) {
   const [form, setForm] = useState({
     titulo: '',
     descricao: '',
@@ -10,9 +16,8 @@ export default function MaterialModal({ open, onClose, onSave, initialData }) {
   });
 
   useEffect(() => {
-    if (initialData) {
-      setForm(initialData);
-    } else {
+    if (initialData) setForm(initialData);
+    else
       setForm({
         titulo: '',
         descricao: '',
@@ -20,15 +25,12 @@ export default function MaterialModal({ open, onClose, onSave, initialData }) {
         tipo: 'pdf',
         visibilidade: 'PUBLICO',
       });
-    }
   }, [initialData, open]);
 
   if (!open) return null;
 
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-    setForm((prev) => ({ ...prev, [name]: value }));
-  };
+  const handleChange = (e) =>
+    setForm((p) => ({ ...p, [e.target.name]: e.target.value }));
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -41,6 +43,7 @@ export default function MaterialModal({ open, onClose, onSave, initialData }) {
         <h2 className="mb-4 text-lg font-semibold">
           {initialData ? 'Editar material' : 'Novo material'}
         </h2>
+        {error && <p className="mb-2 text-sm text-red-600">{error}</p>}
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
             <label className="mb-1 block text-sm font-medium">Título</label>
@@ -85,12 +88,13 @@ export default function MaterialModal({ open, onClose, onSave, initialData }) {
                 <option value="pdf">PDF</option>
                 <option value="slide">Slides</option>
                 <option value="video">Vídeo</option>
-                <option value="repo">Repositório</option>
-                <option value="link">Link</option>
+                <option value="repositorio">Repositório</option>
               </select>
             </div>
             <div>
-              <label className="mb-1 block text-sm font-medium">Visibilidade</label>
+              <label className="mb-1 block text-sm font-medium">
+                Visibilidade
+              </label>
               <select
                 name="visibilidade"
                 value={form.visibilidade}
